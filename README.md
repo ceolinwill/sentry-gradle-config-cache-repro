@@ -1,5 +1,7 @@
 # Sentry Android Gradle plugin: instrumentation depends on configuration cache reuse
 
+Reported in https://github.com/getsentry/sentry-android-gradle-plugin/issues/1492.
+
 The Sentry Android Gradle plugin decides which instrumentation to apply from the Sentry SDK versions it reads in a `configuration.incoming.afterResolve` hook (`SentryModulesCollector.kt`). That hook runs only when Gradle resolves the runtime classpath during configuration. When Gradle reuses the configuration cache, the hook never runs, `SentryModulesService.sentryModules` stays empty, and `SpanAddingClassVisitorFactory` enables no instrumentation. Any class instrumented in that build, such as the `Application` after an edit, ships without app-start or logcat instrumentation. The module versions are not task inputs either, so the build cache stores that uninstrumented output under the same key and serves it to later builds with a fresh configuration.
 
 ## Reproduction
